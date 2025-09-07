@@ -7,11 +7,11 @@
 # Accept licences
 # src http://vgaidarji.me/blog/2017/05/31/automatically-accept-android-sdkmanager-licenses/
 
-for I in "platforms;android-34" \
-         "build-tools;34.0.0"; do
+for I in "platforms;android-35" \
+         "build-tools;35.0.0"; do
     echo "Trying to update with tools/bin/sdkmanager: " $I
-    yes | sdkmanager $I
+    yes | sdkmanager --sdk_root=$ANDROID_HOME $I
 done
 
-sdkmanager --update
-yes | sdkmanager --licenses
+sdkmanager --sdk_root=$ANDROID_HOME  --update
+yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
