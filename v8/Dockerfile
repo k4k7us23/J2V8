@@ -39,10 +39,10 @@ RUN echo $PATH
 # Fetch V8 code
 RUN fetch v8
 WORKDIR /v8build/v8
-RUN git checkout 10.3.174.14
-RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
-RUN ./build/install-build-deps.sh
-RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
+RUN git checkout 12.0.267.14
+#RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
+#RUN ./build/install-build-deps.sh
+#RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
 WORKDIR /v8build
 
 ENV target_os ${target_os}
@@ -54,6 +54,10 @@ ENV build_platform ${target_cpu}.release
 ENV path_to_args ${target_os}-${target_cpu}/args.gn
 
 WORKDIR /v8build/v8
+RUN apt-get -qq update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --upgrade -qq -y --no-install-recommends \
+    pkg-config
+
 RUN ./tools/dev/v8gen.py ${build_platform} -vv
 
 RUN rm out.gn/${build_platform}/args.gn

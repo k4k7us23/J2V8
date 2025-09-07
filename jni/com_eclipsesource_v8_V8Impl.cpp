@@ -21,11 +21,6 @@
 
 #define TAG "J2V8_V8Impl"
 
-#pragma comment(lib, "userenv.lib")
-#pragma comment(lib, "IPHLPAPI.lib")
-#pragma comment(lib, "Ws2_32.lib")
-#pragma comment(lib, "WINMM.lib")
-#pragma comment( lib, "psapi.lib" )
 
 using namespace std;
 using namespace v8;
@@ -117,7 +112,7 @@ public:
     platform_ = platform.get();
     channel_ = std::unique_ptr<V8InspectorChannelImpl>(new V8InspectorChannelImpl(isolate, inspectorDelegate));
     inspector_ = v8_inspector::V8Inspector::create(isolate, this);
-    session_ = inspector_->connect(kContextGroupId, channel_.get(), v8_inspector::StringView());
+    session_ = inspector_->connect(kContextGroupId, channel_.get(), v8_inspector::StringView(), v8_inspector::V8Inspector::kFullyTrusted);
     context_->SetAlignedPointerInEmbedderData(1, this);
 
     inspector_->contextCreated(

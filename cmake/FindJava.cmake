@@ -41,6 +41,9 @@ IF(JAVA_EXECUTABLE)
     ELSEIF(var MATCHES "java full version \"kaffe-[0-9]+\\.[0-9]+\\.[0-9_]+\".*")
       STRING( REGEX REPLACE "java full version \"kaffe-([0-9]+\\.[0-9]+\\.[0-9_]+).*"
         "\\1" Java_VERSION_STRING "${var}" )
+    ELSEIF(var MATCHES "openjdk version \"[0-9]+\\.[0-9]+\\.[0-9_.]+[oem-]*\".*")
+      STRING( REGEX REPLACE ".* version \"([0-9]+\\.[0-9]+\\.[0-9_.]+)[oem-]*\".*"
+        "\\1" Java_VERSION_STRING "${var}" )   
     ELSE()
       IF(NOT Java_FIND_QUIETLY)
         message(WARNING "regex not supported: ${var}. Please report")

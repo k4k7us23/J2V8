@@ -36,7 +36,7 @@ def build_node_js(config):
     else:
         os.environ['DEST_CPU'] = arch
     return [
-        """android-gcc-toolchain $ARCH --api 21 --host gcc-lpthread -C \
+        """android-gcc-toolchain $ARCH --api 34 --host gcc-lpthread -C \
             sh -c \"                \\
             cd ./node;              \\
             ./configure             \\

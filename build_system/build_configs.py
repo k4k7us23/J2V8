@@ -19,12 +19,30 @@ configs = [
             },
       },
       {
+            "name": "android-x86_64 @ Docker",
+            "params": {
+                  "target": c.target_android,
+                  "arch": c.arch_x86_64,
+                  "docker": True,
+                  "node_enabled": True,
+            },
+      },
+      {
             "name": "android-arm @ Docker",
             "params": {
                   "target": c.target_android,
                   "arch": c.arch_arm,
                   "docker": True,
                   "node_enabled": True,
+            },
+      },
+      {
+            "name": "android-arm64 @ Docker",
+            "params": {
+                  "target": c.target_android,
+                  "arch": c.arch_arm64,
+                  "docker": True,
+                  "node_enabled": False,
             },
       },
       # ALPINE LINUX builds
