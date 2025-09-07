@@ -1,4 +1,4 @@
-ARG sys_image=debian:jessie-slim
+ARG sys_image=ubuntu:20.04
 
 FROM $sys_image
 
@@ -15,8 +15,8 @@ RUN ./install.debian.packages.sh
 
 ENV ANDROID_HOME "/usr/local/android-sdk"
 
-ENV NDK_VERSION "r18"
-ENV NDK_NAME "android-ndk-$NDK_VERSION-linux-x86_64"
+ENV NDK_VERSION "r26b"
+ENV NDK_NAME "android-ndk-$NDK_VERSION-linux"
 RUN echo "Preparing Android NDK..." && \
     mkdir -p /build && \
     cd /build && \
@@ -45,7 +45,8 @@ RUN mkdir /usr/local/android-sdk/tools/keymaps && \
 
 COPY ./shared/install.jdk.sh /temp/docker/shared
 RUN ./install.jdk.sh
-ENV JAVA_HOME "/opt/jdk/jdk1.8.0_131"
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+RUN export JAVA_HOME
 
 ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
 
@@ -53,8 +54,17 @@ COPY ./shared/install-android-dependencies.sh /temp/docker/shared
 RUN ./install-android-dependencies.sh
 
 COPY ./shared/install.cmake.sh /temp/docker/shared
-RUN ./install.cmake.sh
-ENV PATH "$PATH:/opt/cmake/bin"
+RUN apt-get update \
+  && apt-get -y install build-essential \
+  && apt-get install -y wget \
+  && rm -rf /var/lib/apt/lists/* \
+  && wget https://github.com/Kitware/CMake/releases/download/v3.22.3/cmake-3.22.3-Linux-x86_64.sh \
+      -q -O /tmp/cmake-install.sh \
+      && chmod u+x /tmp/cmake-install.sh \
+      && mkdir /opt/cmake-3.22.3 \
+      && /tmp/cmake-install.sh --skip-license --prefix=/opt/cmake-3.22.3 \
+      && rm /tmp/cmake-install.sh \
+      && ln -s /opt/cmake-3.22.3/bin/* /usr/local/bin
 
 COPY ./shared/install.gradle.sh /temp/docker/shared
 RUN ./install.gradle.sh
@@ -70,10 +80,10 @@ RUN cd /temp && gradle --dry-run
 # Install the Android tools
 RUN sdkmanager emulator
 RUN sdkmanager tools
-RUN sdkmanager "system-images;android-21;default;armeabi-v7a"
+RUN sdkmanager "system-images;android-34;default;arm64-v8a"
 
 # Required for Android ARM Emulator
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libqt5widgets5
+RUN apt-get update && apt-get install -y libqt5widgets5
 ENV QT_QPA_PLATFORM offscreen
 ENV LD_LIBRARY_PATH ${ANDROID_HOME}/tools/lib64:${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
 
@@ -95,4 +105,8 @@ EXPOSE 5037
 EXPOSE 5554
 EXPOSE 5555
 EXPOSE 5900
+
+RUN apt-get -qq update && \
+	DEBIAN_FRONTEND=noninteractive apt-get -qq install -y \
+	python-is-python2
 
