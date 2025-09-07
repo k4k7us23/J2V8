@@ -9,7 +9,6 @@
 .gradle
 .DS_Store
 *.patch
-*.so
 *.dll
 *.dylib
 hs_err*.log

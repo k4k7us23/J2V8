@@ -2,6 +2,10 @@ ARG sys_image=ubuntu:20.04
 
 FROM $sys_image
 
+ARG MIRROR=ftp.uni-stuttgart.de/ubuntu
+RUN sed -i "s|archive.ubuntu.com|${MIRROR}|g" /etc/apt/sources.list && \
+    sed -i "s|security.ubuntu.com|${MIRROR}|g" /etc/apt/sources.list
+
 RUN mkdir -p /temp/docker/shared/
 WORKDIR /temp/docker/shared/
 
@@ -15,7 +19,7 @@ RUN ./install.debian.packages.sh
 
 ENV ANDROID_HOME "/usr/local/android-sdk"
 
-ENV NDK_VERSION "r26b"
+ENV NDK_VERSION "r28c"
 ENV NDK_NAME "android-ndk-$NDK_VERSION-linux"
 RUN echo "Preparing Android NDK..." && \
     mkdir -p /build && \
@@ -33,22 +37,21 @@ ENV PATH "$PATH:/build/android-gcc-toolchain:$NDK"
 
 ENV PATH "$PATH:$ANDROID_HOME/tools"
 ENV PATH "$PATH:$ANDROID_HOME/platform-tools"
+ENV PATH "$PATH:$ANDROID_HOME/tools/bin"
+ENV PATH "$PATH:$ANDROID_HOME/cmdline-tools/bin"
+
 
 RUN mkdir -p ${ANDROID_HOME} && \
     cd ${ANDROID_HOME} && \
-    wget -q https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip -O android_tools.zip && \
+    wget -q https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip -O android_tools.zip && \
     unzip -qq android_tools.zip && \
     rm android_tools.zip
 
-RUN mkdir /usr/local/android-sdk/tools/keymaps && \
-    touch /usr/local/android-sdk/tools/keymaps/en-us
 
 COPY ./shared/install.jdk.sh /temp/docker/shared
 RUN ./install.jdk.sh
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64/
 RUN export JAVA_HOME
-
-ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
 
 COPY ./shared/install-android-dependencies.sh /temp/docker/shared
 RUN ./install-android-dependencies.sh
@@ -68,7 +71,7 @@ RUN apt-get update \
 
 COPY ./shared/install.gradle.sh /temp/docker/shared
 RUN ./install.gradle.sh
-ENV GRADLE_HOME "/opt/gradle-3.5"
+ENV GRADLE_HOME "/opt/gradle-8.14.3"
 ENV PATH "$PATH:$GRADLE_HOME/bin"
 
 RUN mkdir -p /temp
@@ -78,9 +81,9 @@ WORKDIR /temp
 RUN cd /temp && gradle --dry-run
 
 # Install the Android tools
-RUN sdkmanager emulator
-RUN sdkmanager tools
-RUN sdkmanager "system-images;android-34;default;arm64-v8a"
+RUN sdkmanager --sdk_root=$ANDROID_HOME emulator
+RUN sdkmanager --sdk_root=$ANDROID_HOME platform-tools
+RUN sdkmanager --sdk_root=$ANDROID_HOME "system-images;android-35;default;arm64-v8a"
 
 # Required for Android ARM Emulator
 RUN apt-get update && apt-get install -y libqt5widgets5

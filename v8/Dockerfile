@@ -2,6 +2,10 @@ ARG sys_image=ubuntu:20.04
 
 FROM $sys_image
 
+ARG MIRROR=ftp.uni-stuttgart.de/ubuntu
+RUN sed -i "s|archive.ubuntu.com|${MIRROR}|g" /etc/apt/sources.list && \
+    sed -i "s|security.ubuntu.com|${MIRROR}|g" /etc/apt/sources.list
+
 # default values
 ARG vendor=debian
 ARG target_os=linux
@@ -23,7 +27,6 @@ RUN apt-get -qq update && \
     g++ g++-multilib \
     execstack \
     python3 \
-    python \
     python3-pip \
     python3-distutils \
     python3-testresources
@@ -36,18 +39,22 @@ RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ENV PATH /v8build/depot_tools:"$PATH"
 RUN echo $PATH
 
+ENV target_os ${target_os}
+
 # Fetch V8 code
-RUN fetch v8
-WORKDIR /v8build/v8
-RUN git checkout 12.0.267.14
-#RUN sed -i 's/snapcraft/nosnapcraft/g' ./build/install-build-deps.sh
-#RUN ./build/install-build-deps.sh
-#RUN sed -i 's/nosnapcraft/snapcraft/g' ./build/install-build-deps.sh
+RUN fetch v8 && \
+    cd /v8build/v8 && \
+    git checkout 12.0.267.14 && \
+    cd /v8build && \
+    echo "target_os= ['${target_os}']" >> .gclient && \
+    gclient sync
+
+
 WORKDIR /v8build
 
-ENV target_os ${target_os}
+
 RUN echo "target_os= ['${target_os}']" >> .gclient
-RUN gclient sync
+RUN gclient sync -D
 
 ENV target_cpu ${target_cpu}
 ENV build_platform ${target_cpu}.release

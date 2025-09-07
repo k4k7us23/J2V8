@@ -200,6 +200,8 @@ set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 # set the include directories
 include_directories(${include_dirs})
 
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
+
 # link the necessary libraries
 target_link_libraries(j2v8
     v8_monolith
