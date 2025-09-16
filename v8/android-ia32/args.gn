@@ -10,3 +10,5 @@ v8_enable_i18n_support= false
 symbol_level = 0
 v8_android_log_stdout = true
 v8_enable_pointer_compression = false
+v8_static_library = true
+v8_enable_temporal_support = false

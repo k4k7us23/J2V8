@@ -27,12 +27,14 @@ RUN apt-get -qq update && \
     g++ g++-multilib \
     execstack \
     python3 \
-    python3-pip \
-    python3-distutils \
-    python3-testresources
+    python \
+    python3-distutils \ 
+    python3-testresources \
+    python3-pip
 
 RUN mkdir -p /v8build
 WORKDIR /v8build
+
 
 # DEPOT TOOLS install
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
@@ -41,20 +43,20 @@ RUN echo $PATH
 
 ENV target_os ${target_os}
 
-# Fetch V8 code
-RUN fetch v8 && \
-    cd /v8build/v8 && \
-    git checkout 12.0.267.14 && \
-    cd /v8build && \
-    echo "target_os= ['${target_os}']" >> .gclient && \
-    gclient sync
+ENV DEBIAN_FRONTEND=noninteractive
 
+RUN apt-get -qq update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --upgrade -qq -y --no-install-recommends \
+    file keyboard-configuration
 
 WORKDIR /v8build
 
-
-RUN echo "target_os= ['${target_os}']" >> .gclient
-RUN gclient sync -D
+RUN fetch v8 && \
+    cd /v8build/v8 && \
+    git checkout 13.9.205.21 && \
+    cd /v8build && \
+    echo "target_os= ['${target_os}']" >> .gclient && \
+    gclient sync
 
 ENV target_cpu ${target_cpu}
 ENV build_platform ${target_cpu}.release
@@ -64,6 +66,11 @@ WORKDIR /v8build/v8
 RUN apt-get -qq update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --upgrade -qq -y --no-install-recommends \
     pkg-config
+
+COPY patches/ /patches/
+
+RUN cd /v8build/v8 && \
+    git apply /patches/*.patch
 
 RUN ./tools/dev/v8gen.py ${build_platform} -vv
 
