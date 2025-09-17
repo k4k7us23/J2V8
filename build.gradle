@@ -4,10 +4,6 @@ group = 'com.eclipsesource.j2v8'
 archivesBaseName = 'j2v8'
 version = System.getenv('J2V8_FULL_VERSION')
 
-ext."signing.secretKeyRingFile" = '/.gnupg/secring.gpg'
-ext."signing.password" = System.getenv("KEYSTORE_PASSWORD")
-ext."signing.keyId" = System.getenv("KEY_ID")
-
 configurations {
     archives {
         extendsFrom configurations.default
@@ -22,11 +18,13 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.12.0'
         classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.32.0'
     }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'spoon'
+apply plugin: 'com.vanniktech.maven.publish'
 
 repositories {    
     google()
@@ -90,3 +88,43 @@ signing {
     // required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
 }
+
+import com.vanniktech.maven.publish.SonatypeHost
+
+afterEvaluate {
+    mavenPublishing {
+        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+        signAllPublications()
+
+        coordinates("io.github.k4k7us23", "j2v8", "1.0")
+
+        pom {
+            name = "j2v8"
+            description = "J2V8 is a set of Java bindings for V8"
+            url = "https://github.com/k4k7us23/J2V8"
+            licenses {
+                license {
+                    name = "Eclipse Public License - v 1.0"
+                    url = "https://www.eclipse.org/legal/epl-v10.html"
+                    distribution = "repo"
+                }
+            }
+        
+            developers {
+              developer {
+                id = "pavel-krylov"
+                name = "Pavel Krylov"
+                url = "https://github.com/k4k7us23"
+              }
+            }
+            scm {
+              url = "https://github.com/k4k7us23/J2V8"
+              connection = "scm:git:git://github.com/k4k7us23/J2V8.git"
+              developerConnection = "scm:git:git://github.com/k4k7us23/J2V8.git"
+            }
+        }
+    }   
+
+}
+
+
