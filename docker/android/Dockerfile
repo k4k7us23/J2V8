@@ -83,7 +83,7 @@ RUN cd /temp && gradle --dry-run
 # Install the Android tools
 RUN sdkmanager --sdk_root=$ANDROID_HOME emulator
 RUN sdkmanager --sdk_root=$ANDROID_HOME platform-tools
-RUN sdkmanager --sdk_root=$ANDROID_HOME "system-images;android-35;default;arm64-v8a"
+RUN sdkmanager --sdk_root=$ANDROID_HOME "system-images;android-35;google_apis_ps16k;arm64-v8a"
 
 # Required for Android ARM Emulator
 RUN apt-get update && apt-get install -y libqt5widgets5

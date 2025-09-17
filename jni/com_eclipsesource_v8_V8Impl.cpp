@@ -371,9 +371,9 @@ void getJNIEnv(JNIEnv*& env) {
   }
 }
 
-static void jsWindowObjectAccessor(Local<String> property,
-  const PropertyCallbackInfo<Value>& info) {
-  info.GetReturnValue().Set(info.GetIsolate()->GetCurrentContext()->Global());
+static void jsWindowObjectAccessor(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    v8::Isolate* isolate = args.GetIsolate();
+    args.GetReturnValue().Set(isolate->GetCurrentContext()->Global());
 }
 
 class ShellArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
@@ -528,12 +528,25 @@ JNIEXPORT jlong JNICALL Java_com_eclipsesource_v8_V8__1createIsolate
       runtime->globalObject->Reset(runtime->isolate, context->Global()->GetPrototype()->ToObject(context).ToLocalChecked());
     }
     else {
-      Local<String> utfAlias = createV8String(env, runtime->isolate, globalAlias);
-      globalObject->SetAccessor(utfAlias, jsWindowObjectAccessor);
-      Handle<Context> context = Context::New(runtime->isolate, nullptr, globalObject);
-      runtime->context_.Reset(runtime->isolate, context);
-      runtime->globalObject = new Persistent<Object>;
-      runtime->globalObject->Reset(runtime->isolate, context->Global()->GetPrototype()->ToObject(context).ToLocalChecked());
+        Local<String> utfAlias = createV8String(env, runtime->isolate, globalAlias);
+
+        v8::Local<v8::FunctionTemplate> getter =
+            v8::FunctionTemplate::New(runtime->isolate, jsWindowObjectAccessor);
+
+        globalObject->SetAccessorProperty(
+            utfAlias,
+            getter,
+            v8::Local<v8::FunctionTemplate>(),
+            v8::PropertyAttribute::None
+        );
+
+        Handle<Context> context = Context::New(runtime->isolate, nullptr, globalObject);
+        runtime->context_.Reset(runtime->isolate, context);
+        runtime->globalObject = new Persistent<Object>;
+        runtime->globalObject->Reset(
+            runtime->isolate,
+            context->Global()->GetPrototype()->ToObject(context).ToLocalChecked()
+        );
     }
     return reinterpret_cast<jlong>(runtime);
 }
@@ -833,7 +846,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_eclipsesource_v8_V8__1getKeys
 
 ScriptOrigin* createScriptOrigin(JNIEnv * env, Isolate* isolate, jstring &jscriptName, jint jlineNumber = 0) {
   Local<String> scriptName = createV8String(env, isolate, jscriptName);
-  return new ScriptOrigin(isolate, scriptName, jlineNumber);
+  return new ScriptOrigin(scriptName, jlineNumber);
 }
 
 bool compileScript(const Local<Context>& context, Isolate *isolate, jstring &jscript, JNIEnv *env, jstring jscriptName, jint &jlineNumber, Local<Script> &script, TryCatch* tryCatch) {
@@ -1831,7 +1844,7 @@ JNIEXPORT jlongArray JNICALL Java_com_eclipsesource_v8_V8__1initNewV8Function
   Isolate* isolate = SETUP(env, v8RuntimePtr, 0);
   MethodDescriptor* md = new MethodDescriptor();
   Local<External> ext = External::New(isolate, md);
-  isolate->IdleNotificationDeadline(1);
+  //isolate->IdleNotificationDeadline(1);
 
   Local<Function> function = Function::New(context, objectCallback, ext).ToLocalChecked();
   md->v8RuntimePtr = v8RuntimePtr;
@@ -1887,7 +1900,7 @@ JNIEXPORT jlong JNICALL Java_com_eclipsesource_v8_V8__1registerJavaMethod
   }
   Handle<Object> object = Local<Object>::New(isolate, *reinterpret_cast<Persistent<Object>*>(objectHandle));
   Local<String> v8FunctionName = createV8String(env, isolate, functionName);
-  isolate->IdleNotificationDeadline(1);
+  //isolate->IdleNotificationDeadline(1);
   MethodDescriptor* md= new MethodDescriptor();
   Local<External> ext = External::New(isolate, md);
 

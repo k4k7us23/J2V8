@@ -167,7 +167,7 @@ source_group("" FILES ${src_files})
 #-----------------------------------------------------------------------
 
 # tell gcc/clang to use the c++17 standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-unused-function -Wno-unused-variable -O3 -funroll-loops -ftree-vectorize -ffast-math -fpermissive -fPIC ")
@@ -201,6 +201,7 @@ set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 include_directories(${include_dirs})
 
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,common-page-size=16384")
 
 # link the necessary libraries
 target_link_libraries(j2v8
