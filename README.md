@@ -1,3 +1,25 @@
+Fork Readme
+====
+
+This is a fork of [J2V8 project](https://github.com/eclipsesource/J2V8) with V8 engine's version updated to `13.9.205.21` (21 August 2025) and support of [16kb page aligment for Android](https://developer.android.com/guide/practices/page-sizes). This fork aims to support only android versions of j2v8.
+
+
+## Setup
+
+```groovy
+dependencies {
+    implementation 'io.github.k4k7us23:j2v8:1.0'
+}
+```
+
+## How to build locally?
+
+For information about how to build this fork locally, please read [BUILDING.md](BUILDING.md) 
+
+<details>
+	<summary><strong>Original J2V8 Readme</strong></summary>
+
+
 J2V8
 ====
 
@@ -14,7 +36,7 @@ Building J2V8 requires building both the native parts and the Java library (.jar
 
 J2V8 uses a cross-platform, cross-compiling build-system written in Python.
 
-For any further build instructions & details please read [BUILDING.md](BUILDING.md)
+For any further build instructions & details please read [BUILDING.md](https://github.com/eclipsesource/J2V8/blob/master/BUILDING.md)
 
 Tutorials
 ==========
@@ -57,3 +79,7 @@ Here are some projects that use J2V8:
 License
 =====
 The code is published under the terms of the [Eclipse Public License, version 1.0](http://www.eclipse.org/legal/epl-v10.html).
+
+</details>
+
+
