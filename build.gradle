@@ -44,7 +44,7 @@ dependencies {
 }
 
 android {
-    compileSdk 35
+    compileSdk 34
     namespace "com.eclipsesource.v8"
 
     defaultConfig {

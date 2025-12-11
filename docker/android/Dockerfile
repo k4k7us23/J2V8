@@ -19,7 +19,7 @@ RUN ./install.debian.packages.sh
 
 ENV ANDROID_HOME "/usr/local/android-sdk"
 
-ENV NDK_VERSION "r28c"
+ENV NDK_VERSION "r26b"
 ENV NDK_NAME "android-ndk-$NDK_VERSION-linux"
 RUN echo "Preparing Android NDK..." && \
     mkdir -p /build && \
