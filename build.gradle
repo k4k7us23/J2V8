@@ -84,14 +84,13 @@ spoon {
     }
 }
 
-signing {
-    // required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
-
 import com.vanniktech.maven.publish.SonatypeHost
 
 afterEvaluate {
+    signing {
+       useGpgCmd()
+        sign publishing.publications
+    }
     mavenPublishing {
         publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
         signAllPublications()
