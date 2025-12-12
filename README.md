@@ -1,14 +1,14 @@
 Fork Readme
 ====
 
-This is a fork of [J2V8 project](https://github.com/eclipsesource/J2V8) with V8 engine's version updated to `13.9.205.21` (21 August 2025) and support of [16kb page aligment for Android](https://developer.android.com/guide/practices/page-sizes). This fork aims to support only android versions of j2v8.
+This is a fork of [J2V8 project](https://github.com/eclipsesource/J2V8) with V8 engine's version updated to `13.8.258.19` (17 June 2025) and support of [16kb page aligment for Android](https://developer.android.com/guide/practices/page-sizes). This fork aims to support only android versions of j2v8.
 
 
 ## Setup
 
 ```groovy
 dependencies {
-    implementation 'io.github.k4k7us23:j2v8:1.0'
+    implementation 'io.github.k4k7us23:j2v8:1.1'
 }
 ```
 
