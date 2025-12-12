@@ -53,7 +53,7 @@ WORKDIR /v8build
 
 RUN fetch v8 && \
     cd /v8build/v8 && \
-    git checkout 13.9.205.21 && \
+    git checkout 13.8.258.19 && \
     cd /v8build && \
     echo "target_os= ['${target_os}']" >> .gclient && \
     gclient sync
@@ -79,6 +79,12 @@ COPY ./${path_to_args} out.gn/${build_platform}/args.gn
 RUN ls -al out.gn/${build_platform}/
 RUN cat out.gn/${build_platform}/args.gn
 RUN touch out.gn/${build_platform}/args.gn
+
+RUN apt-get -qq update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --upgrade -qq -y --no-install-recommends \
+    python3.9 && \
+    ln -sf /usr/bin/python3.9 /usr/bin/python3 && \
+    ln -sf /usr/bin/python3.9 /usr/bin/python
 
 # Build the V8 monolithic static liblary
 RUN ninja -C out.gn/${build_platform} -t clean

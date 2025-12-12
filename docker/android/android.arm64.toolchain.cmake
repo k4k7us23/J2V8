@@ -1,8 +1,8 @@
 set(CMAKE_SYSTEM_NAME Android)
-set(CMAKE_SYSTEM_VERSION 35) # API level
+set(CMAKE_SYSTEM_VERSION 26) # Minsdk API level
 
 set(CMAKE_ANDROID_ARCH arm64)
 set(CMAKE_ANDROID_ARCH_ABI arm64-v8a)
-set(CMAKE_ANDROID_NDK /build/android-ndk-r28c/)
+set(CMAKE_ANDROID_NDK /build/android-ndk-r26b/)
 set(CMAKE_ANDROID_STL_TYPE c++_static)
 
