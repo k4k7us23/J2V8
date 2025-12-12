@@ -84,19 +84,18 @@ spoon {
     }
 }
 
-signing {
-    // required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
-
 import com.vanniktech.maven.publish.SonatypeHost
 
 afterEvaluate {
+    signing {
+       useGpgCmd()
+        sign publishing.publications
+    }
     mavenPublishing {
         publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
         signAllPublications()
 
-        coordinates("io.github.k4k7us23", "j2v8", "1.0")
+        coordinates("io.github.k4k7us23", "j2v8", "1.1")
 
         pom {
             name = "j2v8"
